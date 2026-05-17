@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>คิดเลขสนุก! 🧮</title>
+<link href="https://fonts.googleapis.com/css2?family=Mitr:wght@400;500;600;700&family=Sriracha&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --sky: #4FC3F7;
+    --sun: #FFD54F;
+    --grass: #81C784;
+    --coral: #FF8A65;
+    --lavender: #CE93D8;
+    --white: #FFFDE7;
+    --dark: #3E2723;
+    --card: #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Mitr', sans-serif;
+    background: linear-gradient(160deg, #E3F2FD 0%, #F3E5F5 50%, #E8F5E9 100%);
+    min-height: 100vh;
+    padding: 20px;
+    overflow-x: hidden;
+  }
+
+  /* floating stars bg */
+  body::before {
+    content: '⭐ 🌟 ✨ 💫 ⭐ 🌟 ✨ 💫 ⭐ 🌟';
+    position: fixed;
+    top: -30px; left: 0; right: 0;
+    font-size: 24px;
+    text-align: center;
+    opacity: 0.15;
+    letter-spacing: 40px;
+    animation: drift 20s linear infinite;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  @keyframes drift {
+    from { transform: translateX(-100px); }
+    to   { transform: translateX(100px); }
+  }
+
+  .container {
+    max-width: 700px;
+    margin: 0 auto;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 28px;
+  }
+
+  .header h1 {
+    font-family: 'Sriracha', cursive;
+    font-size: 3rem;
+    color: #5C3317;
+    text-shadow: 3px 3px 0 var(--sun), 5px 5px 0 rgba(0,0,0,0.1);
+    line-height: 1;
+    letter-spacing: 2px;
+  }
+
+  .header p {
+    font-size: 1.1rem;
+    color: #6D4C41;
+    margin-top: 6px;
+  }
+
+  /* OP SELECTOR */
+  .op-tabs {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-bottom: 22px;
+    flex-wrap: wrap;
+  }
+
+  .op-btn {
+    width: 70px; height: 70px;
+    border-radius: 20px;
+    border: 4px solid rgba(0,0,0,0.1);
+    background: var(--card);
+    font-size: 2rem;
+    cursor: pointer;
+    transition: all 0.18s cubic-bezier(.34,1.56,.64,1);
+    font-family: 'Mitr', sans-serif;
+    display: flex; align-items: center; justify-content: center;
+    flex-direction: column;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.12);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .op-btn span.label {
+    font-size: 0.65rem;
+    color: #888;
+    margin-top: -4px;
+  }
+
+  .op-btn:hover { transform: translateY(-4px) scale(1.08); }
+
+  .op-btn.active {
+    border-color: transparent;
+    transform: translateY(-4px) scale(1.08);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+  }
+
+  .op-btn[data-op="+"].active { background: #FFF9C4; border-color: #F9A825; }
+  .op-btn[data-op="-"].active { background: #FCE4EC; border-color: #E91E63; }
+  .op-btn[data-op="×"].active { background: #E8F5E9; border-color: #43A047; }
+  .op-btn[data-op="÷"].active { background: #EDE7F6; border-color: #7B1FA2; }
+
+  /* INPUT CARD */
+  .input-card {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    margin-bottom: 22px;
+    border: 3px solid rgba(255,255,255,0.8);
+  }
+
+  .inputs-row {
+    display: flex;
+    gap: 14px;
+    align-items: center;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+
+  .num-input-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .num-input-wrap label {
+    font-size: 0.85rem;
+    color: #999;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .num-input {
+    width: 140px;
+    height: 72px;
+    border: 3px solid #E0E0E0;
+    border-radius: 18px;
+    font-size: 2.2rem;
+    font-family: 'Mitr', sans-serif;
+    font-weight: 600;
+    text-align: center;
+    color: var(--dark);
+    outline: none;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    background: #FAFAFA;
+  }
+
+  .num-input:focus {
+    border-color: var(--sky);
+    box-shadow: 0 0 0 4px rgba(79,195,247,0.2);
+    background: #FFF;
+  }
+
+  .op-display {
+    font-size: 2.8rem;
+    font-weight: 700;
+    color: #5C3317;
+    min-width: 40px;
+    text-align: center;
+    margin-top: 22px;
+  }
+
+  .calc-btn {
+    display: block;
+    width: 100%;
+    margin-top: 22px;
+    height: 60px;
+    border: none;
+    border-radius: 18px;
+    font-size: 1.4rem;
+    font-family: 'Sriracha', cursive;
+    font-weight: 400;
+    color: white;
+    cursor: pointer;
+    background: linear-gradient(135deg, #FF7043, #FF8A65);
+    box-shadow: 0 5px 0 #BF360C, 0 8px 20px rgba(255,112,67,0.4);
+    transition: all 0.15s;
+    letter-spacing: 1px;
+  }
+
+  .calc-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 0 #BF360C, 0 10px 24px rgba(255,112,67,0.45); }
+  .calc-btn:active { transform: translateY(3px); box-shadow: 0 2px 0 #BF360C, 0 4px 12px rgba(255,112,67,0.3); }
+
+  /* RESULT CARD */
+  .result-card {
+    background: var(--card);
+    border-radius: 28px;
+    padding: 28px;
+    box-shadow: 0 8px 30px rgba(0,0,0,0.1);
+    border: 3px solid rgba(255,255,255,0.8);
+    animation: popIn 0.4s cubic-bezier(.34,1.56,.64,1);
+    display: none;
+  }
+
+  .result-card.show { display: block; }
+
+  @keyframes popIn {
+    from { transform: scale(0.85); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+
+  .section-title {
+    font-family: 'Sriracha', cursive;
+    font-size: 1.4rem;
+    color: #5C3317;
+    margin-bottom: 18px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  /* LONG DIVISION / COLUMN WORK */
+  .work-area {
+    background: #FFFEF0;
+    border: 2px dashed #F9A825;
+    border-radius: 18px;
+    padding: 24px;
+    font-family: 'Courier New', monospace;
+    position: relative;
+    overflow-x: auto;
+  }
+
+  .work-area.add { border-color: #F9A825; background: #FFFDE7; }
+  .work-area.sub { border-color: #E91E63; background: #FFF0F5; }
+  .work-area.mul { border-color: #43A047; background: #F1F8E9; }
+  .work-area.div { border-color: #7B1FA2; background: #F3E5F5; }
+
+  /* COLUMN LAYOUT for +, -, × */
+  .column-work {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0;
+    font-size: 1.8rem;
+    font-weight: 700;
+    line-height: 1.6;
+  }
+
+  .col-row {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    position: relative;
+  }
+
+  .col-row .carry-row {
+    font-size: 0.85rem;
+    color: #E53935;
+    font-weight: 700;
+    position: absolute;
+    top: -14px;
+    right: 0;
+    display: flex;
+    gap: 0;
+  }
+
+  .digit-cell {
+    width: 44px;
+    text-align: center;
+    position: relative;
+  }
+
+  .carry-digit {
+    width: 44px;
+    text-align: center;
+    color: #E53935;
+    font-size: 0.9rem;
+    font-weight: 700;
+    min-height: 20px;
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+  }
+
+  .op-symbol-cell {
+    width: 44px;
+    text-align: center;
+    color: #5C3317;
+  }
+
+  .h-line {
+    width: 100%;
+    height: 3px;
+    background: #5C3317;
+    margin: 4px 0;
+    border-radius: 2px;
+  }
+
+  .result-row .digit-cell {
+    color: #E53935;
+  }
+
+  /* BORROW */
+  .strike { text-decoration: line-through; color: #aaa; }
+  .replaced { color: #E91E63; font-size: 1.1em; }
+
+  /* DIVISION LAYOUT */
+  .div-work { font-size: 1.4rem; line-height: 2; }
+  .div-box {
+    display: inline-block;
+    border-top: 3px solid #5C3317;
+    border-left: 3px solid #5C3317;
+    padding: 4px 12px 4px 4px;
+    margin-left: 44px;
+    min-width: 60px;
+    font-weight: 700;
+    letter-spacing: 4px;
+  }
+
+  .div-step { margin: 6px 0 6px 44px; }
+  .div-step .sub-line { border-top: 2px solid #7B1FA2; margin: 2px 0; }
+  .div-label { color: #888; font-size: 0.8rem; }
+
+  /* MUL STEPS */
+  .mul-step-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 1rem;
+    color: #555;
+    margin: 4px 0;
+  }
+
+  .mul-step-row .step-eq { color: #43A047; font-weight: 700; }
+
+  /* ANSWER BOX */
+  .answer-box {
+    margin-top: 20px;
+    padding: 18px 24px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #E3F2FD, #EDE7F6);
+    border: 3px solid #90CAF9;
+    text-align: center;
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #1A237E;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+  }
+
+  .answer-box .emoji { font-size: 2rem; }
+  .answer-box .eq-text { font-family: 'Sriracha', cursive; color: #3949AB; }
+
+  /* STEPS LIST */
+  .steps-list {
+    margin-top: 18px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  .step-item {
+    background: white;
+    border-radius: 14px;
+    padding: 12px 16px;
+    font-size: 1rem;
+    color: #444;
+    border-left: 5px solid var(--sky);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+    animation: slideIn 0.3s ease both;
+  }
+
+  .step-item:nth-child(2) { animation-delay: 0.05s; border-color: var(--coral); }
+  .step-item:nth-child(3) { animation-delay: 0.1s; border-color: var(--grass); }
+  .step-item:nth-child(4) { animation-delay: 0.15s; border-color: var(--lavender); }
+  .step-item:nth-child(5) { animation-delay: 0.2s; border-color: var(--sun); }
+
+  @keyframes slideIn {
+    from { transform: translateX(-20px); opacity: 0; }
+    to   { transform: translateX(0); opacity: 1; }
+  }
+
+  .step-num {
+    display: inline-flex;
+    width: 28px; height: 28px;
+    background: var(--sky);
+    border-radius: 50%;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: white;
+    font-size: 0.85rem;
+    margin-right: 8px;
+    flex-shrink: 0;
+  }
+
+  .step-item:nth-child(2) .step-num { background: var(--coral); }
+  .step-item:nth-child(3) .step-num { background: var(--grass); }
+  .step-item:nth-child(4) .step-num { background: var(--lavender); }
+  .step-item:nth-child(5) .step-num { background: #F9A825; }
+
+  .highlight { color: #E53935; font-weight: 700; }
+  .blue { color: #1565C0; font-weight: 700; }
+
+  /* ERROR */
+  .error-msg {
+    background: #FFEBEE;
+    border: 2px solid #EF9A9A;
+    color: #C62828;
+    padding: 16px;
+    border-radius: 14px;
+    text-align: center;
+    font-size: 1rem;
+    display: none;
+  }
+
+  /* MASCOT */
+  .mascot {
+    text-align: center;
+    font-size: 3rem;
+    margin-bottom: 4px;
+    animation: bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes bounce {
+    0%,100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+  }
+
+  /* Confetti-like dots */
+  .dots-decoration {
+    display: flex;
+    gap: 6px;
+    justify-content: center;
+    margin: 10px 0;
+  }
+  .dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+  }
+
+  @media (max-width: 480px) {
+    .header h1 { font-size: 2.2rem; }
+    .num-input { width: 110px; font-size: 1.8rem; }
+    .column-work { font-size: 1.4rem; }
+    .digit-cell { width: 36px; }
+    .carry-digit { width: 36px; }
+    .op-symbol-cell { width: 36px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <div class="header">
+    <div class="mascot">🧮</div>
+    <h1>คิดเลขสนุก!</h1>
+    <p>เรียนรู้วิธีทำทีละขั้นตอน 🌈</p>
+  </div>
+
+  <!-- OP TABS -->
+  <div class="op-tabs">
+    <button class="op-btn active" data-op="+" onclick="selectOp(this)">
+      ➕<span class="label">บวก</span>
+    </button>
+    <button class="op-btn" data-op="-" onclick="selectOp(this)">
+      ➖<span class="label">ลบ</span>
+    </button>
+    <button class="op-btn" data-op="×" onclick="selectOp(this)">
+      ✖️<span class="label">คูณ</span>
+    </button>
+    <button class="op-btn" data-op="÷" onclick="selectOp(this)">
+      ➗<span class="label">หาร</span>
+    </button>
+  </div>
+
+  <!-- INPUT -->
+  <div class="input-card">
+    <div class="inputs-row">
+      <div class="num-input-wrap">
+        <label>ตัวตั้ง</label>
+        <input class="num-input" id="numA" type="number" value="47" min="0" max="9999">
+      </div>
+      <div class="op-display" id="opDisplay">+</div>
+      <div class="num-input-wrap">
+        <label>ตัวดำเนินการ</label>
+        <input class="num-input" id="numB" type="number" value="38" min="0" max="9999">
+      </div>
+    </div>
+    <button class="calc-btn" onclick="calculate()">🔍 คิดเลข! ดูวิธีทำ</button>
+  </div>
+
+  <!-- ERROR -->
+  <div class="error-msg" id="errorMsg"></div>
+
+  <!-- RESULT -->
+  <div class="result-card" id="resultCard">
+    <div class="section-title">📝 วิธีทำ (แบบตั้งยาว)</div>
+    <div class="work-area" id="workArea"></div>
+
+    <div class="steps-list" id="stepsList"></div>
+
+    <div class="answer-box" id="answerBox"></div>
+  </div>
+
+</div>
+
+<script>
+let currentOp = '+';
+
+function selectOp(btn) {
+  document.querySelectorAll('.op-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  currentOp = btn.dataset.op;
+  document.getElementById('opDisplay').textContent = currentOp;
+  document.getElementById('resultCard').classList.remove('show');
+  document.getElementById('errorMsg').style.display = 'none';
+}
+
+function showError(msg) {
+  const e = document.getElementById('errorMsg');
+  e.textContent = msg;
+  e.style.display = 'block';
+  document.getElementById('resultCard').classList.remove('show');
+}
+
+function calculate() {
+  const a = parseInt(document.getElementById('numA').value);
+  const b = parseInt(document.getElementById('numB').value);
+  const errorEl = document.getElementById('errorMsg');
+  errorEl.style.display = 'none';
+
+  if (isNaN(a) || isNaN(b) || a < 0 || b < 0) return showError('⚠️ กรุณาใส่ตัวเลขที่ถูกต้อง');
+  if (currentOp === '÷' && b === 0) return showError('⚠️ หารด้วยศูนย์ไม่ได้นะ!');
+
+  if (currentOp === '+') renderAddition(a, b);
+  else if (currentOp === '-') renderSubtraction(a, b);
+  else if (currentOp === '×') renderMultiplication(a, b);
+  else if (currentOp === '÷') renderDivision(a, b);
+
+  document.getElementById('resultCard').classList.add('show');
+  document.getElementById('resultCard').scrollIntoView({behavior:'smooth', block:'start'});
+}
+
+/* ─── ADDITION ─── */
+function renderAddition(a, b) {
+  const result = a + b;
+  const wa = document.getElementById('workArea');
+  wa.className = 'work-area add';
+
+  const strA = String(a), strB = String(b), strR = String(result);
+  // totalLen = max digits of result (may be longer than a or b)
+  const totalLen = strR.length;
+  const pA = strA.padStart(totalLen, ' ');
+  const pB = strB.padStart(totalLen, ' ');
+
+  // Compute carry for each column, right to left
+  // carries[i] = carry GOING INTO column i (from the right)
+  // carry row should be displayed ABOVE column i-1 (one step to the left)
+  const carryIn = new Array(totalLen + 1).fill(0);
+  for (let i = totalLen - 1; i >= 0; i--) {
+    const dA = parseInt(pA[i]) || 0;
+    const dB = parseInt(pB[i]) || 0;
+    const sum = dA + dB + carryIn[i + 1];
+    carryIn[i] = Math.floor(sum / 10);
+  }
+  // carryIn[i] = carry that flows INTO column i from the right
+  // We display carry ABOVE column i, which is the carry generated from column i+1
+  // So display carryIn[i+1] above column i → carryIn[1..totalLen] above columns [0..totalLen-1]
+  const carryRow = Array.from({length: totalLen}, (_, i) => {
+    const c = carryIn[i + 1]; // carry entering column i from the right
+    return `<div class="carry-digit" style="color:#E53935;font-size:0.85rem;font-weight:700;">${c > 0 ? c : '&nbsp;'}</div>`;
+  }).join('');
+
+  const rowA = pA.split('').map(d => `<div class="digit-cell">${d === ' ' ? '&nbsp;' : d}</div>`).join('');
+  const rowB = pB.split('').map(d => `<div class="digit-cell">${d === ' ' ? '&nbsp;' : d}</div>`).join('');
+  const rowR = strR.split('').map(d => `<div class="digit-cell" style="color:#E53935;font-weight:800">${d}</div>`).join('');
+
+  const placeNamesLabelAdd = ['หน่วย','สิบ','ร้อย','พัน','หมื่น','แสน'];
+  const labelRowAdd = Array.from({length: totalLen}, (_, i) => {
+    const place = placeNamesLabelAdd[totalLen - 1 - i] || '';
+    return `<div class="digit-cell" style="font-size:0.6rem;color:#aaa;font-family:'Mitr',sans-serif;text-align:center;padding-top:2px;">${place}</div>`;
+  }).join('');
+
+  wa.innerHTML = `
+    <div class="column-work" style="position:relative;padding-left:48px;">
+      <div class="col-row">${carryRow}</div>
+      <div class="col-row">${rowA}</div>
+      <div class="col-row" style="position:relative;">
+        <div style="position:absolute;left:-44px;font-size:1.8rem;font-weight:700;">+</div>
+        ${rowB}
+      </div>
+      <div class="h-line"></div>
+      <div class="col-row">${rowR}</div>
+      <div class="col-row">${labelRowAdd}</div>
+    </div>
+  `;
+
+  renderSteps(buildAddSteps(a, b));
+  renderAnswer(a, b, '+', result, '🎉');
+}
+
+function buildAddSteps(a, b) {
+  const steps = [];
+  const rA = String(a).split('').reverse();
+  const rB = String(b).split('').reverse();
+  const maxLen = Math.max(rA.length, rB.length);
+  const placeNames = ['หน่วย','สิบ','ร้อย','พัน','หมื่น','แสน'];
+  let carry = 0;
+  for (let i = 0; i < maxLen; i++) {
+    const dA = parseInt(rA[i] || 0);
+    const dB = parseInt(rB[i] || 0);
+    const sum = dA + dB + carry;
+    const write = sum % 10;
+    const newCarry = Math.floor(sum / 10);
+    const place = placeNames[i] || `หลักที่${i+1}`;
+    let s = `<span class="step-num">${i+1}</span> หลัก<b>${place}</b>: <span class="blue">${dA}</span> + <span class="blue">${dB}</span>`;
+    if (carry > 0) s += ` + ทด <span class="highlight">${carry}</span>`;
+    s += ` = <span class="highlight">${sum}</span>`;
+    if (newCarry > 0) s += ` → เขียน <b>${write}</b>, ทด <span class="highlight">${newCarry}</span> ไว้เหนือหลัก${placeNames[i+1]||'ถัดไป'}`;
+    else s += ` → เขียน <b>${write}</b>`;
+    steps.push(s);
+    carry = newCarry;
+  }
+  if (carry > 0) steps.push(`<span class="step-num">${maxLen+1}</span> ยังมีทดเหลือ <span class="highlight">${carry}</span> → เขียนนำหน้า`);
+  return steps;
+}
+
+/* ─── SUBTRACTION ─── */
+function renderSubtraction(a, b) {
+  if (a < b) return showError('⚠️ ตัวตั้งต้องมากกว่าหรือเท่ากับตัวลบนะ (สำหรับเด็ก ป.1-ป.4)');
+  const result = a - b;
+  const wa = document.getElementById('workArea');
+  wa.className = 'work-area sub';
+
+  const maxLen = Math.max(String(a).length, String(b).length);
+  // Work on digits arrays (left-to-right, index 0 = leftmost)
+  const pA = String(a).padStart(maxLen, ' ').split('').map(d => d === ' ' ? null : parseInt(d));
+  const pB = String(b).padStart(maxLen, ' ').split('').map(d => d === ' ' ? null : parseInt(d));
+
+  // Compute adjusted A after borrowing (right to left)
+  const adjA = pA.map(d => d === null ? null : d); // copy
+  // Track which columns gave/received borrow: borrowedAt[i]=true means col i received +10
+  const borrowedAt = new Array(maxLen).fill(false);
+  // reducedAt[i] = amount subtracted from col i due to lending
+  const reducedAt = new Array(maxLen).fill(0);
+
+  for (let i = maxLen - 1; i >= 0; i--) {
+    const dA = adjA[i] === null ? 0 : adjA[i];
+    const dB = pB[i] === null ? 0 : pB[i];
+    if (dA < dB) {
+      // borrow from left
+      borrowedAt[i] = true;
+      adjA[i] = dA + 10;
+      // find the nearest left column to reduce
+      for (let j = i - 1; j >= 0; j--) {
+        if (adjA[j] !== null && adjA[j] > 0) {
+          adjA[j]--;
+          reducedAt[j]++;
+          break;
+        } else if (adjA[j] !== null) {
+          // it's 0, borrow further
+          adjA[j] = adjA[j] + 10 - 1;
+          borrowedAt[j] = true;
+          reducedAt[j]++;
+        }
+      }
+    }
+  }
+
+  const rowA = pA.map((d, i) => {
+    if (d === null) return `<div class="digit-cell" style="display:flex;flex-direction:column;align-items:center;min-width:44px;"><div style="min-height:14px;"></div><div>&nbsp;</div></div>`;
+    const wasReduced = reducedAt[i] > 0;
+    const wasBorrowed = borrowedAt[i];
+
+    const plus10Label = wasBorrowed
+      ? `<div style="font-size:0.65rem;color:#E91E63;font-weight:700;line-height:1;min-height:14px;text-align:center;">+10</div>`
+      : `<div style="min-height:14px;"></div>`;
+
+    let digitContent = '';
+    if (wasReduced) {
+      // gave away 1 → struck original + new smaller val (adjA[i] = d - 1)
+      digitContent = `<span style="color:#aaa;text-decoration:line-through;font-size:0.8em;">${d}</span><span style="color:#E91E63;font-weight:800;">${d - reducedAt[i]}</span>`;
+    } else {
+      // normal digit (wasBorrowed just adds +10 label above, digit itself unchanged)
+      digitContent = `<span>${d}</span>`;
+    }
+
+    return `<div class="digit-cell" style="display:flex;flex-direction:column;align-items:center;min-width:44px;">
+      ${plus10Label}
+      <div style="display:flex;align-items:baseline;justify-content:center;gap:1px;">${digitContent}</div>
+    </div>`;
+  }).join('');
+
+  const rowB = pB.map(d => `<div class="digit-cell" style="display:flex;flex-direction:column;align-items:center;min-width:44px;">
+    <div style="min-height:14px;"></div>
+    <div>${d === null ? '&nbsp;' : d}</div>
+  </div>`).join('');
+
+  const rowR = String(result).padStart(maxLen, ' ').split('').map(d =>
+    `<div class="digit-cell" style="display:flex;flex-direction:column;align-items:center;min-width:44px;">
+      <div style="min-height:14px;"></div>
+      <div style="color:#E53935;font-weight:800;">${d === ' ' ? '&nbsp;' : d}</div>
+    </div>`
+  ).join('');
+
+  const placeNamesLabel = ['หน่วย','สิบ','ร้อย','พัน','หมื่น','แสน'];
+  const labelRow = Array.from({length: maxLen}, (_, i) => {
+    const place = placeNamesLabel[maxLen - 1 - i] || '';
+    return `<div class="digit-cell" style="font-size:0.6rem;color:#aaa;font-family:'Mitr',sans-serif;text-align:center;padding-top:2px;">${place}</div>`;
+  }).join('');
+
+  wa.innerHTML = `
+    <div class="column-work" style="position:relative;padding-left:48px;padding-top:24px;">
+      <div class="col-row">${rowA}</div>
+      <div class="col-row" style="position:relative;">
+        <div style="position:absolute;left:-44px;font-size:1.8rem;font-weight:700;">−</div>
+        ${rowB}
+      </div>
+      <div class="h-line"></div>
+      <div class="col-row">${rowR}</div>
+      <div class="col-row">${labelRow}</div>
+    </div>
+  `;
+
+  renderSteps(buildSubSteps(a, b));
+  renderAnswer(a, b, '−', result, '👏');
+}
+
+function buildSubSteps(a, b) {
+  const steps = [];
+  const maxLen = Math.max(String(a).length, String(b).length);
+  const rA = String(a).split('').reverse().map(Number);
+  const rB = String(b).split('').reverse().map(Number);
+  const placeNames = ['หน่วย','สิบ','ร้อย','พัน','หมื่น','แสน'];
+  const adjA = [...rA];
+  // pad
+  while (adjA.length < maxLen) adjA.push(0);
+
+  for (let i = 0; i < maxLen; i++) {
+    const dA = adjA[i] || 0;
+    const dB = rB[i] || 0;
+    const place = placeNames[i] || `หลักที่${i+1}`;
+    let s = `<span class="step-num">${i+1}</span> หลัก<b>${place}</b>: `;
+    if (dA < dB) {
+      const borrowed = placeNames[i+1] || 'ถัดไป';
+      s += `<span class="blue">${dA}</span> น้อยกว่า <span class="blue">${dB}</span>`;
+      s += ` → ยืมจากหลัก<b>${borrowed}</b>`;
+      s += ` → <span class="highlight">${dA}+10 = ${dA+10}</span> − <span class="blue">${dB}</span> = <b>${dA+10-dB}</b>`;
+      adjA[i] = dA + 10;
+      if (i+1 < maxLen) adjA[i+1]--;
+    } else {
+      s += `<span class="blue">${dA}</span> − <span class="blue">${dB}</span> = <b>${dA - dB}</b>`;
+    }
+    steps.push(s);
+  }
+  return steps;
+}
+
+/* ─── MULTIPLICATION ─── */
+function renderMultiplication(a, b) {
+  const result = a * b;
+  const wa = document.getElementById('workArea');
+  wa.className = 'work-area mul';
+
+  const strA = String(a);
+  const strB = String(b);
+  const bDigitsRev = strB.split('').reverse(); // right to left
+
+  // Build partial product rows with carry display per row
+  // Each partial: multiply strA by one digit of b, with shift
+  const partialRows = []; // { digits: string of the partial number, shift: i, carryArr: [] }
+  const placeNamesB = ['หน่วย','สิบ','ร้อย','พัน','หมื่น'];
+
+  bDigitsRev.forEach((bd, shift) => {
+    const d = parseInt(bd);
+    // compute digit-by-digit with carry for this row
+    const aRev = strA.split('').reverse().map(Number);
+    let carry = 0;
+    const resultDigits = []; // right to left
+    const carryArr = []; // carry generated at each position (to display above next left col)
+    for (let i = 0; i < aRev.length; i++) {
+      const prod = aRev[i] * d + carry;
+      resultDigits.push(prod % 10);
+      carry = Math.floor(prod / 10);
+      carryArr.push(carry); // carry going into next column
+    }
+    if (carry > 0) resultDigits.push(carry);
+    // add shift zeros to the RIGHT (placeholder for units/tens/etc.)
+    const fullDigits = resultDigits.reverse().concat(new Array(shift).fill(0));
+    const num = parseInt(fullDigits.join('')) || 0;
+    partialRows.push({ num, shift, d, carryArr: carryArr.slice(0, aRev.length) });
+  });
+
+  // figure out total display width
+  const totalLen = String(result).length + 1;
+  const aLen = strA.length;
+
+  // For each partial row, compute carry array aligned to strA columns
+  // shift=0: multiply from units digit of b, no offset
+  // shift=1: multiply from tens digit of b, so the multiplication starts 1 col to the left
+  partialRows.forEach(p => {
+    const carries = new Array(aLen).fill(0);
+    const aRev = strA.split('').reverse().map(Number);
+    let carry = 0;
+    for (let i = 0; i < aRev.length; i++) {
+      const prod = aRev[i] * p.d + carry;
+      carry = Math.floor(prod / 10);
+      // carry goes above strA digit at position (i+1) from right = col (aLen-2-i) from left
+      // but for shifted rows, the effective strA column being multiplied is still i from right of strA
+      // carry position doesn't shift — it's always relative to strA itself
+      const colFromLeft = aLen - 2 - i;
+      if (colFromLeft >= 0 && carry > 0) carries[colFromLeft] = carry;
+    }
+    p.carryAboveA = carries;
+  });
+
+  // Map carryAboveA → totalLen display columns
+  // strA occupies columns [totalLen-aLen .. totalLen-1] in the display grid
+  // So strA col i from left → display col (totalLen - aLen + i)
+  // For shifted partials, the carry row should align to the SAME strA columns
+  // (because carry is about strA digits, not the result position)
+
+  // Build rowA with carry slots above each digit — one carry row per partial
+  // We'll render: for each partial, a carry-above-A row then the partial digits row
+
+  // Render top rows (a and b) — rowA has no carry itself; carries are per-partial
+  const rowABase = strA.padStart(totalLen, ' ').split('').map(d =>
+    `<div class="digit-cell">${d === ' ' ? '&nbsp;' : d}</div>`).join('');
+  const rowB = strB.padStart(totalLen, ' ').split('').map(d =>
+    `<div class="digit-cell">${d === ' ' ? '&nbsp;' : d}</div>`).join('');
+
+  // Render each partial product row
+  // Layout per partial:
+  //   [carry row above strA — aligned to strA columns]
+  //   [strA row — shown only for first partial to avoid repetition]
+  //   [partial digits row]
+  // Actually we show strA + B once at top, then for each partial show:
+  //   carry row (aligned to strA width, padded to totalLen)
+  //   partial digits row
+
+  let partialsHTML = '';
+  partialRows.forEach((p, idx) => {
+    const numStr = String(p.num).padStart(totalLen, ' ');
+
+    // carry row: aligned above the partial product digits (accounting for shift)
+    // partial product occupies cols shifted left by p.shift from strA position
+    // carry at strA col i from left → display col (totalLen - aLen + i - p.shift)
+    const carryDisplayArr = new Array(totalLen).fill(0);
+    p.carryAboveA.forEach((c, i) => {
+      const col = (totalLen - aLen) + i - p.shift;
+      if (col >= 0 && col < totalLen) carryDisplayArr[col] = c;
+    });
+
+    const hasCarry = carryDisplayArr.some(c => c > 0);
+    const carryRowHTML = carryDisplayArr.map(c =>
+      `<div class="carry-digit" style="color:#E65100;font-size:0.75rem;font-weight:700;">${c > 0 ? c : '&nbsp;'}</div>`
+    ).join('');
+
+    const digitRowHTML = numStr.split('').map(d =>
+      `<div class="digit-cell" style="color:#1B5E20;font-weight:700;">${d === ' ' ? '&nbsp;' : d}</div>`
+    ).join('');
+
+    partialsHTML += `
+      ${hasCarry ? `<div class="col-row" style="font-size:0.8rem;min-height:18px;">${carryRowHTML}</div>` : `<div style="min-height:4px;"></div>`}
+      <div class="col-row" style="position:relative;">
+        ${idx === 0 ? '' : `<div style="position:absolute;left:-44px;font-size:1.8rem;font-weight:700;color:#555;">+</div>`}
+        ${digitRowHTML}
+      </div>
+    `;
+  });
+
+  // final result row
+  const rowR = String(result).padStart(totalLen, ' ').split('').map(d =>
+    `<div class="digit-cell" style="color:#E53935;font-weight:800;">${d === ' ' ? '&nbsp;' : d}</div>`
+  ).join('');
+
+  const placeNamesLabelMul = ['หน่วย','สิบ','ร้อย','พัน','หมื่น','แสน'];
+  const labelRowMul = Array.from({length: totalLen}, (_, i) => {
+    const place = placeNamesLabelMul[totalLen - 1 - i] || '';
+    return `<div class="digit-cell" style="font-size:0.6rem;color:#aaa;font-family:'Mitr',sans-serif;text-align:center;padding-top:2px;">${place}</div>`;
+  }).join('');
+
+  wa.innerHTML = `
+    <div class="column-work" style="position:relative;padding-left:48px;">
+      <div class="col-row">${rowABase}</div>
+      <div class="col-row" style="position:relative;">
+        <div style="position:absolute;left:-44px;font-size:1.8rem;font-weight:700;">×</div>
+        ${rowB}
+      </div>
+      <div class="h-line"></div>
+      ${partialsHTML}
+      ${partialRows.length > 1 ? `<div class="h-line"></div><div class="col-row">${rowR}</div><div class="col-row">${labelRowMul}</div>` : `<div class="col-row">${rowR}</div><div class="col-row">${labelRowMul}</div>`}
+    </div>
+  `;
+
+  renderSteps(buildMulSteps(a, b, partialRows, placeNamesB));
+  renderAnswer(a, b, '×', result, '🌟');
+}
+
+function buildMulSteps(a, b, partialRows, placeNamesB) {
+  const steps = [];
+  const placeNames = ['หน่วย','สิบ','ร้อย','พัน','หมื่น'];
+  const strB = String(b).split('').reverse();
+  const strA = String(a);
+
+  strB.forEach((bd, shift) => {
+    const d = parseInt(bd);
+    const place = placeNames[shift] || `หลักที่${shift+1}`;
+    const aRev = strA.split('').reverse().map(Number);
+    const placeA = ['หน่วย','สิบ','ร้อย','พัน','หมื่น'];
+    let carry = 0;
+    let detail = '';
+    for (let i = 0; i < aRev.length; i++) {
+      const prod = aRev[i] * d + carry;
+      const write = prod % 10;
+      carry = Math.floor(prod / 10);
+      detail += `${aRev[i]}×${d}`;
+      if (prod - (prod%10) > 0 || carry > 0) detail += `<span style="color:#888;font-size:0.85em">(+ทด${prod - write > 0 ? Math.floor((prod-write)/10) : 0 })</span>`;
+      detail += `=${prod} `;
+    }
+    const partial = partialRows[shift].num;
+    const shiftNote = shift > 0 ? ` (เลื่อน ${shift} หลัก เพราะเป็นหลัก${place})` : '';
+    steps.push(`<span class="step-num">${shift+1}</span> <b>${b}</b> หลัก<b>${place}</b> = <span class="blue">${d}</span> → <span class="blue">${a}</span> × <span class="blue">${d}</span> = <span class="step-eq">${partial}</span>${shiftNote}`);
+  });
+
+  if (strB.length > 1) {
+    // add the addition step
+    const partialNums = partialRows.map(p => p.num);
+    steps.push(`<span class="step-num">${strB.length+1}</span> บวกผลคูณทั้งหมด: ${partialNums.join(' + ')} = <span class="highlight">${a * b}</span>`);
+  }
+  return steps;
+}
+
+/* ─── DIVISION ─── */
+function renderDivision(a, b) {
+  const quotient = Math.floor(a / b);
+  const remainder = a % b;
+  const wa = document.getElementById('workArea');
+  wa.className = 'work-area div';
+
+  const aStr = String(a);
+  const CELL = 40;
+  const totalCols = aStr.length;
+  const totalWidth = totalCols * CELL;
+
+  // Build steps
+  const steps = [];
+  let current = 0;
+  for (let i = 0; i < aStr.length; i++) {
+    current = current * 10 + parseInt(aStr[i]);
+    if (current < b && i < aStr.length - 1) continue;
+    const q = Math.floor(current / b);
+    const prod = q * b;
+    const rem = current - prod;
+    const nextNum = i < aStr.length - 1 ? rem * 10 + parseInt(aStr[i + 1]) : rem;
+    steps.push({ current, q, prod, rem, endIdx: i, nextNum, isLast: i >= aStr.length - 1 });
+    current = rem;
+  }
+
+  const quotientStr = steps.map(s => s.q).join('');
+
+  // Position number so its LAST digit sits exactly at column endIdx
+  // endIdx is 0-based from left (0=first digit of aStr)
+  // total grid: totalCols columns of width CELL each
+  function numRow(num, color, endIdx) {
+    const numStr = String(num);
+    // last digit right edge = (endIdx+1)*CELL
+    // first digit left edge = (endIdx+1-numStr.length)*CELL
+    const left = (endIdx + 1 - numStr.length) * CELL;
+    return `<div style="width:${totalWidth}px;height:2rem;position:relative;">
+      <div style="position:absolute;left:${left}px;width:${numStr.length * CELL}px;text-align:center;color:${color};font-size:1.5rem;font-weight:700;font-family:'Courier New',monospace;line-height:2rem;">${numStr.split('').map(d => `<span style="display:inline-block;width:${CELL}px;text-align:center;">${d}</span>`).join('')}</div>
+    </div>`;
+  }
+
+  function hline(endIdx, numDigits) {
+    const left = (endIdx + 1 - numDigits) * CELL;
+    return `<div style="width:${totalWidth}px;height:6px;position:relative;">
+      <div style="position:absolute;left:${left}px;width:${numDigits * CELL}px;height:2px;background:#5C3317;top:2px;"></div>
+    </div>`;
+  }
+
+  let stepsHTML = '';
+
+  steps.forEach((step) => {
+    const curLen = String(step.current).length;
+    const prodLen = String(step.prod).length;
+    const lineLen = Math.max(curLen, prodLen);
+
+    stepsHTML += hline(step.endIdx, lineLen);
+    stepsHTML += numRow(step.prod, '#2E7D32', step.endIdx);
+
+    if (step.isLast) {
+      const remLen = Math.max(String(step.rem).length, prodLen);
+      stepsHTML += hline(step.endIdx, remLen);
+      stepsHTML += numRow(step.rem === 0 ? '0' : step.rem, '#E53935', step.endIdx);
+    } else {
+      const nextEndIdx = step.endIdx + 1;
+      const nextLen = Math.max(String(step.nextNum).length, prodLen);
+      stepsHTML += hline(nextEndIdx, nextLen);
+      stepsHTML += numRow(step.nextNum, '#E53935', nextEndIdx);
+    }
+  });
+
+  wa.innerHTML = `
+    <div style="display:inline-flex;align-items:flex-start;overflow-x:auto;padding-top:8px;">
+      <!-- Divisor -->
+      <div style="font-size:1.5rem;font-weight:700;color:#1A237E;padding-right:4px;margin-top:1.7rem;font-family:'Courier New',monospace;">${b}</div>
+      <!-- ⌐ bracket: quotient on top (no border), then top+left border wrapping dividend+steps -->
+      <div style="display:flex;flex-direction:column;">
+        ${numRow(quotientStr, '#E65100', totalCols - 1)}
+        <div style="padding-left:4px;">
+          <div style="border-top:3px solid #5C3317;border-left:3px solid #5C3317;padding-left:4px;display:inline-block;">
+            ${numRow(a, '#1A237E', totalCols - 1)}
+          </div>
+          <div style="padding-left:8px;">
+            ${stepsHTML}
+          </div>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const stepsList = steps.map((step, idx) =>
+    `<span class="step-num">${idx+1}</span> นำ <span class="blue">${step.current}</span> ÷ <span class="blue">${b}</span> = <span class="step-eq">${step.q}</span> → ${b} × ${step.q} = <span class="highlight">${step.prod}</span> เหลือ <b>${step.rem}</b>${!step.isLast ? ` นำ <b>${aStr[step.endIdx+1]}</b> ลงมา → <span class="blue">${step.nextNum}</span>` : ''}`
+  );
+
+  renderSteps(stepsList);
+  const ans = remainder > 0 ? `${quotient} เหลือ ${remainder}` : String(quotient);
+  renderAnswer(a, b, '÷', ans, '🎊');
+}
+
+/* ─── HELPERS ─── */
+function renderSteps(steps) {
+  const sl = document.getElementById('stepsList');
+  sl.innerHTML = steps.map(s => `<div class="step-item">${s}</div>`).join('');
+}
+
+function renderAnswer(a, b, op, result, emoji, extra='') {
+  document.getElementById('answerBox').innerHTML = `
+    <span class="emoji">${emoji}</span>
+    <span class="eq-text">${a} ${op} ${b} = ${result} ${extra}</span>
+    <span class="emoji">${emoji}</span>
+  `;
+}
+</script>
+</body>
+</html>
